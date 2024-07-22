@@ -1,0 +1,63 @@
+from collections import deque
+
+def is_valid_state(m_left, c_left, boat_left, m_right, c_right, boat_right):
+    if m_left >= 0 and c_left >= 0 and m_right >= 0 and c_right >= 0:
+        if (m_left == 0 or m_left >= c_left) and (m_right == 0 or m_right >= c_right):
+            return True
+    return False
+
+def get_successors(state):
+    successors = []
+    m_left, c_left, boat_left, m_right, c_right, boat_right = state
+    
+    if boat_left:
+        new_boat_left = 0
+        new_boat_right = 1
+        moves = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+    else:
+        new_boat_left = 1
+        new_boat_right = 0
+        moves = [(-1, 0), (-2, 0), (0, -1), (0, -2), (-1, -1)]
+    
+    for m, c in moves:
+        new_m_left = m_left - m if boat_left else m_left + m
+        new_c_left = c_left - c if boat_left else c_left + c
+        new_m_right = m_right + m if boat_left else m_right - m
+        new_c_right = c_right + c if boat_left else c_right - c
+        
+        new_state = (new_m_left, new_c_left, new_boat_left, new_m_right, new_c_right, new_boat_right)
+        
+        if is_valid_state(new_m_left, new_c_left, new_boat_left, new_m_right, new_c_right, new_boat_right):
+            successors.append(new_state)
+    
+    return successors
+
+def solve_missionaries_and_cannibals():
+    initial_state = (3, 3, 1, 0, 0, 0)
+    goal_state = (0, 0, 0, 3, 3, 1)
+    
+    queue = deque([(initial_state, [])])
+    visited = set()
+    visited.add(initial_state)
+    
+    while queue:
+        current_state, path = queue.popleft()
+        
+        if current_state == goal_state:
+            return path + [current_state]
+        
+        for successor in get_successors(current_state):
+            if successor not in visited:
+                visited.add(successor)
+                queue.append((successor, path + [current_state]))
+    
+    return None
+
+solution = solve_missionaries_and_cannibals()
+
+if solution:
+    print("Solution found:")
+    for step in solution:
+        print(step)
+else:
+    print("No solution found.")

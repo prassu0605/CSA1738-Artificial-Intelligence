@@ -1,0 +1,73 @@
+from collections import deque
+
+# Define the possible actions
+ACTIONS = ['UP', 'DOWN', 'LEFT', 'RIGHT', 'CLEAN']
+
+# Define the goal state (all rooms cleaned)
+def is_goal_state(state, rows, cols):
+    return all(state[r][c] == 'C' for r in range(rows) for c in range(cols))
+
+# Check if a move is within the bounds of the grid
+def is_valid_move(x, y, rows, cols):
+    return 0 <= x < rows and 0 <= y < cols
+
+# Get the successors of the current state
+def get_successors(state, x, y, rows, cols):
+    successors = []
+    
+    for action in ACTIONS:
+        new_x, new_y = x, y
+        new_state = [row[:] for row in state]
+        
+        if action == 'UP':
+            new_x = x - 1
+        elif action == 'DOWN':
+            new_x = x + 1
+        elif action == 'LEFT':
+            new_y = y - 1
+        elif action == 'RIGHT':
+            new_y = y + 1
+        elif action == 'CLEAN':
+            new_state[x][y] = 'C'
+        
+        if action == 'CLEAN' or is_valid_move(new_x, new_y, rows, cols):
+            successors.append((new_state, new_x, new_y, action))
+    
+    return successors
+
+# Breadth-First Search to find the sequence of actions to clean all rooms
+def solve_vacuum_cleaner_problem(initial_state, start_x, start_y, rows, cols):
+    queue = deque([(initial_state, start_x, start_y, [])])
+    visited = set()
+    visited.add((tuple(tuple(row) for row in initial_state), start_x, start_y))
+    
+    while queue:
+        current_state, x, y, path = queue.popleft()
+        
+        if is_goal_state(current_state, rows, cols):
+            return path
+        
+        for successor, new_x, new_y, action in get_successors(current_state, x, y, rows, cols):
+            state_tuple = (tuple(tuple(row) for row in successor), new_x, new_y)
+            if state_tuple not in visited:
+                visited.add(state_tuple)
+                queue.append((successor, new_x, new_y, path + [action]))
+    
+    return None
+
+# Define the grid and initial position of the vacuum cleaner
+initial_grid = [
+    ['D', 'D', 'C'],
+    ['C', 'D', 'D'],
+    ['D', 'C', 'D']
+]
+start_position = (0, 0)
+rows, cols = len(initial_grid), len(initial_grid[0])
+
+solution = solve_vacuum_cleaner_problem(initial_grid, start_position[0], start_position[1], rows, cols)
+
+if solution:
+    print("Solution found:")
+    print(" -> ".join(solution))
+else:
+    print("No solution found.")

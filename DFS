@@ -1,0 +1,31 @@
+# Python program to implement DFS
+
+# Function to perform DFS on the graph
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    
+    visited.add(start)
+    print(start)  # Process the current node
+    
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+    
+    return visited
+
+# Example usage:
+if __name__ == "__main__":
+    # Example graph represented as an adjacency list
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['A', 'D', 'E'],
+        'C': ['A', 'F'],
+        'D': ['B'],
+        'E': ['B', 'F'],
+        'F': ['C', 'E']
+    }
+    
+    # Call DFS starting from node 'A'
+    print("DFS starting from node 'A':")
+    visited_nodes = dfs(graph, 'A')

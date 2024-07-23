@@ -1,0 +1,37 @@
+from itertools import permutations
+
+# Function to calculate the total distance of a given path
+def calculate_path_distance(graph, path):
+    distance = 0
+    for i in range(len(path) - 1):
+        distance += graph[path[i]][path[i + 1]]
+    distance += graph[path[-1]][path[0]]  # Returning to the starting city
+    return distance
+
+# Function to solve the Traveling Salesman Problem using brute-force
+def traveling_salesman_bruteforce(graph):
+    cities = list(graph.keys())
+    shortest_path = None
+    min_distance = float('inf')
+    
+    for path in permutations(cities):
+        current_distance = calculate_path_distance(graph, path)
+        if current_distance < min_distance:
+            min_distance = current_distance
+            shortest_path = path
+    
+    return shortest_path, min_distance
+
+# Example usage
+if __name__ == "__main__":
+    # Example graph represented as a distance matrix
+    graph = {
+        'A': {'B': 10, 'C': 15, 'D': 20},
+        'B': {'A': 10, 'C': 35, 'D': 25},
+        'C': {'A': 15, 'B': 35, 'D': 30},
+        'D': {'A': 20, 'B': 25, 'C': 30}
+    }
+    
+    shortest_path, min_distance = traveling_salesman_bruteforce(graph)
+    print(f"Shortest path: {shortest_path}")
+    print(f"Minimum distance: {min_distance}")

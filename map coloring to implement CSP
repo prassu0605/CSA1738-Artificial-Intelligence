@@ -1,0 +1,60 @@
+# Define the map as a graph (adjacency list)
+# Example: Australia map
+# Nodes: A, B, C, D, E, F
+# Edges: (A-B), (A-C), (B-C), (B-D), (C-D), (D-E), (E-F)
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'C', 'D'],
+    'C': ['A', 'B', 'D'],
+    'D': ['B', 'C', 'E'],
+    'E': ['D', 'F'],
+    'F': ['E']
+}
+
+# Colors to be used
+colors = ['Red', 'Green', 'Blue']
+
+def is_valid(node, color, assignment):
+    """
+    Check if the color assignment is valid for the given node.
+    """
+    for neighbor in graph[node]:
+        if neighbor in assignment and assignment[neighbor] == color:
+            return False
+    return True
+
+def map_coloring(nodes, assignment):
+    """
+    Backtracking algorithm to assign colors to nodes.
+    """
+    if len(assignment) == len(nodes):
+        return assignment
+
+    # Select an unassigned node
+    node = [n for n in nodes if n not in assignment][0]
+
+    for color in colors:
+        if is_valid(node, color, assignment):
+            assignment[node] = color
+            result = map_coloring(nodes, assignment)
+            if result:
+                return result
+            # Remove the color assignment if not successful
+            del assignment[node]
+    
+    return None
+
+def main():
+    nodes = list(graph.keys())
+    assignment = {}
+    result = map_coloring(nodes, assignment)
+    
+    if result:
+        print("Solution found:")
+        for node in result:
+            print(f"{node}: {result[node]}")
+    else:
+        print("No solution exists.")
+
+if __name__ == "__main__":
+    main()
